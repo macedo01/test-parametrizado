@@ -1,17 +1,19 @@
 package br.ucsal.bes20222.testequalidade.locadora;
 
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
 import br.ucsal.bes20222.testequalidade.locadora.business.LocacaoBO;
 import br.ucsal.bes20222.testequalidade.locadora.dominio.Modelo;
 import br.ucsal.bes20222.testequalidade.locadora.dominio.Veiculo;
 import br.ucsal.bes20222.testequalidade.locadora.dominio.enums.SituacaoVeiculoEnum;
 import br.ucsal.bes20222.testequalidade.locadora.exception.VeiculoNaoEncontradoException;
 import br.ucsal.bes20222.testequalidade.locadora.persistence.VeiculoDAO;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
-import java.util.*;
 
 /**
  * Testes para os métodos da classe LocacaoBO.
@@ -25,10 +27,9 @@ class LocacaoBOTest {
 	 * Testar o cálculo do valor total de locação por 3 dias de 1 veículo fabricado
 	 * em 2015. 
 	 */
-	@Test
-	void testarCalculoValorTotalLocacao1Veiculo3Dias() throws VeiculoNaoEncontradoException {
-		Double expectedRentValue = 360.00;
-
+	@ParameterizedTest()
+	@CsvSource(value = { "360.00:2022", "450.00:2017"}, delimiter = ':')
+	void testarCalculoValorTotalLocacao1Veiculo3Dias(Double expectedRentValue, Integer anoDeReferencia) throws VeiculoNaoEncontradoException {
 		VeiculoDAO dao = new VeiculoDAO();
 		Veiculo veiculo = new Veiculo();
 		veiculo.setPlaca("ABC-1234");
@@ -43,7 +44,7 @@ class LocacaoBOTest {
 				veiculo.getPlaca()
 		);
 
-		Double rentValue = new LocacaoBO(dao).calcularValorTotalLocacao(placas, 3, LocalDate.now());
+		Double rentValue = new LocacaoBO(dao).calcularValorTotalLocacao(placas, 3, LocalDate.of(anoDeReferencia, 01, 01));
 
 		Assertions.assertEquals(expectedRentValue, rentValue);
 	}
@@ -52,9 +53,9 @@ class LocacaoBOTest {
 	 * Testar o cálculo do valor total de locação por 4 dias de 2 veículos fabricados
 	 * em 2015.
 	 */
-	@Test
-	void testarCalculoValorTotalLocacao2Veiculos4Dias() throws VeiculoNaoEncontradoException {
-		Double expectedRentValue = 960.00;
+	@ParameterizedTest()
+	@CsvSource(value = { "960.00:2022", "1200.00:2017"}, delimiter = ':')
+	void testarCalculoValorTotalLocacao2Veiculos4Dias(Double expectedRentValue, Integer anoDeReferencia) throws VeiculoNaoEncontradoException {
 
 		VeiculoDAO dao = new VeiculoDAO();
 		Veiculo veiculo = new Veiculo();
@@ -80,7 +81,7 @@ class LocacaoBOTest {
 		);
 
 
-		Double rentValue = new LocacaoBO(dao).calcularValorTotalLocacao(placas, 4, LocalDate.now());
+		Double rentValue = new LocacaoBO(dao).calcularValorTotalLocacao(placas, 4, LocalDate.of(anoDeReferencia,01,01));
 
 		Assertions.assertEquals(expectedRentValue, rentValue);
 	}
